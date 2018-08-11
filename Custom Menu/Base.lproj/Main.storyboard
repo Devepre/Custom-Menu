@@ -44,12 +44,12 @@
             <objects>
                 <viewController storyboardIdentifier="SecondViewController" id="dWo-Bg-MBz" customClass="AAPLCustomPresentationSecondViewController" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="YLG-18-zh9">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="260"/>
+                        <rect key="frame" x="0.0" y="0.0" width="250" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="1" green="0.84585520209999998" blue="0.47441856719999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <viewLayoutGuide key="safeArea" id="0xI-fx-DCf"/>
                     </view>
-                    <size key="freeformSize" width="375" height="260"/>
+                    <size key="freeformSize" width="250" height="667"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rvd-jD-fbL" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
