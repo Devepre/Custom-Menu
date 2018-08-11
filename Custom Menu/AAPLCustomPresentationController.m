@@ -12,6 +12,7 @@
 //! controller.
 static const CGFloat kPresentedViewCornerRadius = 0.f;
 static const CGFloat kPresentedViewWidthMultiplier = 3.0 / 4.0;
+static const CGFloat kTransitionDuration = 0.35;
 
 @interface AAPLCustomPresentationController () <UIViewControllerAnimatedTransitioning>
 @property (nonatomic, strong) UIView *dimmingView;
@@ -250,7 +251,7 @@ static const CGFloat kPresentedViewWidthMultiplier = 3.0 / 4.0;
 #pragma mark UIViewControllerAnimatedTransitioning
 
 - (NSTimeInterval)transitionDuration:(id<UIViewControllerContextTransitioning>)transitionContext {
-    return [transitionContext isAnimated] ? 0.35 : 0;
+    return [transitionContext isAnimated] ? kTransitionDuration : 0;
 }
 
 
@@ -307,6 +308,16 @@ static const CGFloat kPresentedViewWidthMultiplier = 3.0 / 4.0;
     // presenting view controller's view was not removed).
     [containerView addSubview:toView];
     
+    NSTimeInterval transitionDuration = [self transitionDuration:transitionContext];
+    
+    void (^animationCompletion)(BOOL) = ^void(BOOL finished) {
+        // When we complete, tell the transition context
+        // passing along the BOOL that indicates whether the transition
+        // finished or not.
+        BOOL wasCancelled = [transitionContext transitionWasCancelled];
+        [transitionContext completeTransition:!wasCancelled];
+    };
+    
     if (isPresenting) {
 //        toViewInitialFrame.origin = CGPointMake(CGRectGetMinX(containerView.bounds), CGRectGetMaxY(containerView.bounds));
         
@@ -317,6 +328,16 @@ static const CGFloat kPresentedViewWidthMultiplier = 3.0 / 4.0;
         
         toViewInitialFrame.size = toViewFinalFrame.size;
         toView.frame = toViewInitialFrame;
+        
+        [UIView animateWithDuration:transitionDuration
+                              delay:0
+             usingSpringWithDamping:0.8
+              initialSpringVelocity:0
+                            options:UIViewAnimationOptionCurveEaseOut
+                         animations:^{
+                             toView.frame = toViewFinalFrame;
+                         }
+                         completion:animationCompletion];
     } else {
         // Because our presentation wraps the presented view controller's view
         // in an intermediate view hierarchy, it is more accurate to rely
@@ -324,23 +345,15 @@ static const CGFloat kPresentedViewWidthMultiplier = 3.0 / 4.0;
         // initial frame (though in this example they will be the same).
 //        fromViewFinalFrame = CGRectOffset(fromView.frame, 0, CGRectGetHeight(fromView.frame));
         fromViewFinalFrame = CGRectOffset(fromView.frame, -CGRectGetWidth(fromView.frame), 0);
+        
+        [UIView animateWithDuration:transitionDuration
+                              delay:0
+                            options:UIViewAnimationOptionCurveEaseOut
+                         animations:^{
+                             fromView.frame = fromViewFinalFrame;
+                         }
+                         completion:animationCompletion];
     }
-    
-    NSTimeInterval transitionDuration = [self transitionDuration:transitionContext];
-    
-    [UIView animateWithDuration:transitionDuration animations:^{
-        if (isPresenting) {
-            toView.frame = toViewFinalFrame;
-        } else {
-            fromView.frame = fromViewFinalFrame;
-        }
-    } completion:^(BOOL finished) {
-        // When we complete, tell the transition context
-        // passing along the BOOL that indicates whether the transition
-        // finished or not.
-        BOOL wasCancelled = [transitionContext transitionWasCancelled];
-        [transitionContext completeTransition:!wasCancelled];
-    }];
 }
 
 #pragma mark -
