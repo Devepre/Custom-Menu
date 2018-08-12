@@ -15,6 +15,7 @@
 		24DA3FA8211F6D9B00572C6B /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 24DA3FA7211F6D9B00572C6B /* main.m */; };
 		24DA3FB0211F6E1A00572C6B /* SKVCustomPresentationSecondViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 24DA3FAF211F6E1A00572C6B /* SKVCustomPresentationSecondViewController.m */; };
 		24DA3FB3211F716B00572C6B /* SKVCustomPresentationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 24DA3FB2211F716B00572C6B /* SKVCustomPresentationController.m */; };
+		24F116CC212096D800EB86F5 /* SKVSideMenuManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 24F116CB212096D800EB86F5 /* SKVSideMenuManager.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +33,8 @@
 		24DA3FAF211F6E1A00572C6B /* SKVCustomPresentationSecondViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SKVCustomPresentationSecondViewController.m; sourceTree = "<group>"; };
 		24DA3FB1211F716B00572C6B /* SKVCustomPresentationController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SKVCustomPresentationController.h; sourceTree = "<group>"; };
 		24DA3FB2211F716B00572C6B /* SKVCustomPresentationController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SKVCustomPresentationController.m; sourceTree = "<group>"; };
+		24F116CA212096D800EB86F5 /* SKVSideMenuManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SKVSideMenuManager.h; sourceTree = "<group>"; };
+		24F116CB212096D800EB86F5 /* SKVSideMenuManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SKVSideMenuManager.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,6 +80,8 @@
 				24DA3FAF211F6E1A00572C6B /* SKVCustomPresentationSecondViewController.m */,
 				24DA3FB1211F716B00572C6B /* SKVCustomPresentationController.h */,
 				24DA3FB2211F716B00572C6B /* SKVCustomPresentationController.m */,
+				24F116CA212096D800EB86F5 /* SKVSideMenuManager.h */,
+				24F116CB212096D800EB86F5 /* SKVSideMenuManager.m */,
 			);
 			path = "Custom Menu";
 			sourceTree = "<group>";
@@ -153,6 +158,7 @@
 			files = (
 				24DA3FB3211F716B00572C6B /* SKVCustomPresentationController.m in Sources */,
 				24DA3F9D211F6D9900572C6B /* ViewController.m in Sources */,
+				24F116CC212096D800EB86F5 /* SKVSideMenuManager.m in Sources */,
 				24DA3FA8211F6D9B00572C6B /* main.m in Sources */,
 				24DA3FB0211F6E1A00572C6B /* SKVCustomPresentationSecondViewController.m in Sources */,
 				24DA3F9A211F6D9900572C6B /* AppDelegate.m in Sources */,
