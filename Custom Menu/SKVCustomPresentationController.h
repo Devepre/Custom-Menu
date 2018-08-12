@@ -12,8 +12,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SKVCustomPresentationController : UIPresentationController <UIViewControllerTransitioningDelegate>
 
-@property (nonatomic, strong) UIView *dimmingView;
-
 @end
 
 NS_ASSUME_NONNULL_END

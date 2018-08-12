@@ -18,8 +18,8 @@ static const CGFloat kDimmingViewAlphaMin = 0.0f;
 
 @interface SKVCustomPresentationController () <UIViewControllerAnimatedTransitioning>
 @property (nonatomic, strong) UIView *presentationWrappingView;
+@property (nonatomic, strong) UIView *dimmingView;
 @end
-
 
 @implementation SKVCustomPresentationController
 
@@ -408,7 +408,8 @@ static const CGFloat kDimmingViewAlphaMin = 0.0f;
 }
 
 - (void)handlePanGesture:(UIPanGestureRecognizer *)recognizer {
-    //    BOOL gestureIsDraggingFromLeftToRight = [recognizer velocityInView:(UIView *)self].x > 0;
+//    BOOL gestureIsDraggingFromRightToLeft = [recognizer velocityInView:self.presentedView].x > 0;
+    
     static CGFloat translation = 0;
     CGFloat alphaValue = self.dimmingView.alpha;
     switch (recognizer.state) {
@@ -418,9 +419,11 @@ static const CGFloat kDimmingViewAlphaMin = 0.0f;
             break;
         case UIGestureRecognizerStateChanged: {
             translation += [recognizer translationInView:self.presentedView].x;
-            NSLog(@"Translation: %f", translation);
             CGFloat translationInPercents = translation / CGRectGetWidth(self.presentedView.bounds);
-            NSLog(@"Translation p: %f", translationInPercents);
+            NSLog(@"Trans p: %f", translationInPercents);
+            if (translationInPercents  > 0) {
+                return;
+            }
             
             CGPoint newCenter = self.presentedView.center;
             newCenter.x += [recognizer translationInView:self.presentedView].x;
@@ -429,12 +432,8 @@ static const CGFloat kDimmingViewAlphaMin = 0.0f;
                                 inView:self.presentedView];
             
             // Setting alpha for dimming view
-            CGFloat alphaDelta = ABS(translation / CGRectGetWidth(self.presentedView.bounds));
-            NSLog(@"Alpha Delta: %f", alphaDelta);
-            
             CGFloat newAlpha = kDimmingViewAlphaMax - kDimmingViewAlphaMax * ABS(translationInPercents);
             self.dimmingView.alpha = newAlpha;
-            NSLog(@"View Alpha: %f", newAlpha);
             break;
         }
         case UIGestureRecognizerStateEnded: {
