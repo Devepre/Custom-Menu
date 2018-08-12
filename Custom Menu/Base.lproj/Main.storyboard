@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14269.12" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
-    <device id="retina4_7" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14252.5"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
@@ -14,11 +11,11 @@
             <objects>
                 <viewController id="BYZ-38-t0r" customClass="ViewController" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="s7k-g3-AvW">
-                                <rect key="frame" x="309" y="20" width="46" height="30"/>
+                                <rect key="frame" x="534" y="20" width="46" height="30"/>
                                 <state key="normal" title="Button">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </state>
@@ -42,11 +39,30 @@
         <!--Custom Presentation Second View Controller-->
         <scene sceneID="Utf-dV-mqi">
             <objects>
-                <viewController storyboardIdentifier="SecondViewController" id="dWo-Bg-MBz" customClass="AAPLCustomPresentationSecondViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="SecondViewController" id="dWo-Bg-MBz" customClass="SKVCustomPresentationSecondViewController" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="YLG-18-zh9">
                         <rect key="frame" x="0.0" y="0.0" width="250" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Lorem ipsum sdo  weik fkboe sdiggsd sdiwef sd fwe r" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nYs-wD-nM1">
+                                <rect key="frame" x="10" y="20" width="230" height="41"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="ezO-2W-sTz">
+                                <rect key="frame" x="36" y="81" width="178" height="2"/>
+                            </progressView>
+                        </subviews>
                         <color key="backgroundColor" red="1" green="0.84585520209999998" blue="0.47441856719999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="ezO-2W-sTz" firstAttribute="top" secondItem="nYs-wD-nM1" secondAttribute="bottom" constant="20" id="6ee-Mh-8QM"/>
+                            <constraint firstItem="nYs-wD-nM1" firstAttribute="top" secondItem="0xI-fx-DCf" secondAttribute="top" id="7Ym-ql-EeU"/>
+                            <constraint firstItem="nYs-wD-nM1" firstAttribute="leading" secondItem="0xI-fx-DCf" secondAttribute="leading" constant="10" id="80f-5C-po6"/>
+                            <constraint firstItem="0xI-fx-DCf" firstAttribute="trailing" secondItem="nYs-wD-nM1" secondAttribute="trailing" constant="10" id="E9e-ka-mZi"/>
+                            <constraint firstItem="ezO-2W-sTz" firstAttribute="leading" secondItem="YLG-18-zh9" secondAttribute="leadingMargin" constant="20" id="KJa-xG-BPq"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="ezO-2W-sTz" secondAttribute="trailing" constant="20" id="cJC-NB-fKX"/>
+                        </constraints>
                         <viewLayoutGuide key="safeArea" id="0xI-fx-DCf"/>
                     </view>
                     <size key="freeformSize" width="250" height="667"/>

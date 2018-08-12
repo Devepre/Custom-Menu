@@ -7,7 +7,7 @@
 //
 
 #import "ViewController.h"
-#import "AAPLCustomPresentationController.h"
+#import "SKVCustomPresentationController.h"
 
 @interface ViewController ()
 
@@ -34,15 +34,17 @@
     // destination object.  To prevent presentationController from being
     // released prior to calling -presentViewController:animated:completion:
     // the NS_VALID_UNTIL_END_OF_SCOPE attribute is appended to the declaration.
-    AAPLCustomPresentationController *presentationController NS_VALID_UNTIL_END_OF_SCOPE;
+    SKVCustomPresentationController *presentationController NS_VALID_UNTIL_END_OF_SCOPE;
     
-    presentationController = [[AAPLCustomPresentationController alloc]
+    presentationController = [[SKVCustomPresentationController alloc]
                               initWithPresentedViewController:secondViewController
                               presentingViewController:self];
     
     secondViewController.transitioningDelegate = presentationController;
     
-    [self presentViewController:secondViewController animated:YES completion:NULL];
+    [self presentViewController:secondViewController
+                       animated:YES
+                     completion:nil];
 }
 
 @end

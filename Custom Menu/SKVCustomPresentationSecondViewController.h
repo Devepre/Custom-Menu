@@ -1,5 +1,5 @@
 //
-//  AAPLCustomPresentationController.h
+//  AAPLCustomPresentationSecondViewController.h
 //  Custom Menu
 //
 //  Created by Limitation on 8/11/18.
@@ -10,7 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface AAPLCustomPresentationController : UIPresentationController <UIViewControllerTransitioningDelegate>
+@interface SKVCustomPresentationSecondViewController : UIViewController
 
 @end
 

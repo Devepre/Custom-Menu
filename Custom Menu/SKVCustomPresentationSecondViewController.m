@@ -1,18 +1,18 @@
 //
-//  AAPLCustomPresentationSecondViewController.m
+//  SKVCustomPresentationSecondViewController.m
 //  Custom Menu
 //
 //  Created by Limitation on 8/11/18.
 //  Copyright © 2018 Limitation. All rights reserved.
 //
 
-#import "AAPLCustomPresentationSecondViewController.h"
+#import "SKVCustomPresentationSecondViewController.h"
 
-@interface AAPLCustomPresentationSecondViewController ()
+@interface SKVCustomPresentationSecondViewController ()
 
 @end
 
-@implementation AAPLCustomPresentationSecondViewController
+@implementation SKVCustomPresentationSecondViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -43,12 +43,11 @@
 //! of the provided \a traitCollection.
 //
 - (void)updatePreferredContentSizeWithTraitCollection:(UITraitCollection *)traitCollection {
-    self.preferredContentSize = CGSizeMake(self.view.bounds.size.width, traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact ? 270 : 420);
+    self.preferredContentSize = CGSizeMake(self.view.bounds.size.width,
+                                           traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact ? 270 : 420);
 }
 
-//| ----------------------------------------------------------------------------
-- (IBAction)sliderValueChange:(UISlider*)sender
-{
+- (IBAction)sliderValueChange:(UISlider*)sender {
     self.preferredContentSize = CGSizeMake(self.view.bounds.size.width, sender.value);
 }
 

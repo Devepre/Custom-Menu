@@ -1,26 +1,27 @@
 //
-//  AAPLCustomPresentationController.m
+//  SKVCustomPresentationController.m
 //  Custom Menu
 //
 //  Created by Limitation on 8/11/18.
 //  Copyright © 2018 Limitation. All rights reserved.
 //
 
-#import "AAPLCustomPresentationController.h"
+#import "SKVCustomPresentationController.h"
 
 //! The corner radius applied to the view containing the presented view
 //! controller.
 static const CGFloat kPresentedViewCornerRadius = 0.f;
 static const CGFloat kPresentedViewWidthMultiplier = 3.0 / 4.0;
 static const CGFloat kTransitionDuration = 0.35;
+static const CGFloat kDimmingViewAlphaMax = 0.5f;
+static const CGFloat kDimmingViewAlphaMin = 0.0f;
 
-@interface AAPLCustomPresentationController () <UIViewControllerAnimatedTransitioning>
-@property (nonatomic, strong) UIView *dimmingView;
+@interface SKVCustomPresentationController () <UIViewControllerAnimatedTransitioning>
 @property (nonatomic, strong) UIView *presentationWrappingView;
 @end
 
 
-@implementation AAPLCustomPresentationController
+@implementation SKVCustomPresentationController
 
 - (instancetype)initWithPresentedViewController:(UIViewController *)presentedViewController
                        presentingViewController:(UIViewController *)presentingViewController {
@@ -63,7 +64,7 @@ static const CGFloat kTransitionDuration = 0.35;
     //        |- presentedViewControllerWrapperView
     //             |- presentedViewControllerView (presentedViewController.view)
     //
-    // SEE ALSO: The note in AAPLCustomPresentationSecondViewController.m.
+    // SEE ALSO: The note in SKVCustomPresentationSecondViewController.m.
     {
         UIView *presentationWrapperView = [[UIView alloc] initWithFrame:self.frameOfPresentedViewInContainerView];
         presentationWrapperView.layer.shadowOpacity = 0.44f;
@@ -119,15 +120,19 @@ static const CGFloat kTransitionDuration = 0.35;
         // fade in the dimmingView alongside the presentation animation.
         id<UIViewControllerTransitionCoordinator> transitionCoordinator = self.presentingViewController.transitionCoordinator;
         
-        self.dimmingView.alpha = 0.f;
+        self.dimmingView.alpha = kDimmingViewAlphaMin;
         [transitionCoordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context) {
-            self.dimmingView.alpha = 0.5f;
+            self.dimmingView.alpha = kDimmingViewAlphaMax;
         } completion:NULL];
     }
 }
 
 
 - (void)presentationTransitionDidEnd:(BOOL)completed {
+    UIPanGestureRecognizer *panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self
+                                                                                 action:@selector(handlePanGesture:)];
+    [self.presentedView addGestureRecognizer:panGesture];
+    
     // The value of the 'completed' argument is the same value passed to the
     // -completeTransition: method by the animator.  It may
     // be NO in the case of a cancelled interactive transition.
@@ -149,7 +154,7 @@ static const CGFloat kTransitionDuration = 0.35;
     id<UIViewControllerTransitionCoordinator> transitionCoordinator = self.presentingViewController.transitionCoordinator;
     
     [transitionCoordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context) {
-        self.dimmingView.alpha = 0.f;
+        self.dimmingView.alpha = kDimmingViewAlphaMin;
     } completion:NULL];
 }
 
@@ -236,16 +241,6 @@ static const CGFloat kTransitionDuration = 0.35;
     self.presentationWrappingView.frame = self.frameOfPresentedViewInContainerView;
 }
 
-#pragma mark -
-#pragma mark Tap Gesture Recognizer
-
-//  IBAction for the tap gesture recognizer added to the dimmingView.
-//  Dismisses the presented view controller.
-//
-- (IBAction)dimmingViewTapped:(UITapGestureRecognizer*)sender {
-    [self.presentingViewController dismissViewControllerAnimated:YES
-                                                      completion:NULL];
-}
 
 #pragma mark -
 #pragma mark UIViewControllerAnimatedTransitioning
@@ -399,6 +394,98 @@ static const CGFloat kTransitionDuration = 0.35;
 //
 - (id<UIViewControllerAnimatedTransitioning>)animationControllerForDismissedController:(UIViewController *)dismissed {
     return self;
+}
+
+
+#pragma mark - Gestures
+
+//  IBAction for the tap gesture recognizer added to the dimmingView.
+//  Dismisses the presented view controller.
+//
+- (IBAction)dimmingViewTapped:(UITapGestureRecognizer*)sender {
+    [self.presentingViewController dismissViewControllerAnimated:YES
+                                                      completion:NULL];
+}
+
+- (void)handlePanGesture:(UIPanGestureRecognizer *)recognizer {
+    //    BOOL gestureIsDraggingFromLeftToRight = [recognizer velocityInView:(UIView *)self].x > 0;
+    static CGFloat translation = 0;
+    CGFloat alphaValue = self.dimmingView.alpha;
+    switch (recognizer.state) {
+        case UIGestureRecognizerStateBegan:
+            translation = 0;
+            alphaValue = self.dimmingView.alpha;
+            break;
+        case UIGestureRecognizerStateChanged: {
+            translation += [recognizer translationInView:self.presentedView].x;
+            NSLog(@"Translation: %f", translation);
+            CGFloat translationInPercents = translation / CGRectGetWidth(self.presentedView.bounds);
+            NSLog(@"Translation p: %f", translationInPercents);
+            
+            CGPoint newCenter = self.presentedView.center;
+            newCenter.x += [recognizer translationInView:self.presentedView].x;
+            self.presentedView.center = newCenter;
+            [recognizer setTranslation:CGPointZero
+                                inView:self.presentedView];
+            
+            // Setting alpha for dimming view
+            CGFloat alphaDelta = ABS(translation / CGRectGetWidth(self.presentedView.bounds));
+            NSLog(@"Alpha Delta: %f", alphaDelta);
+            
+            CGFloat newAlpha = kDimmingViewAlphaMax - kDimmingViewAlphaMax * ABS(translationInPercents);
+            self.dimmingView.alpha = newAlpha;
+            NSLog(@"View Alpha: %f", newAlpha);
+            break;
+        }
+        case UIGestureRecognizerStateEnded: {
+            CGFloat delta = CGRectGetMidX(self.presentedView.bounds) / 2.0;
+            BOOL hasMovedGreaterThanHalfWay = self.presentedView.center.x < delta;
+            [self animatePanelShouldExpand:!hasMovedGreaterThanHalfWay];
+            break;
+        }
+        default:
+            break;
+    }
+}
+
+
+- (void)animatePanelShouldExpand:(BOOL)shouldExpand {
+    if (shouldExpand) {
+        NSInteger newX = 0;
+        [self animateCenterPanelXPosition:newX
+                        completionHandler:^(BOOL param) {
+                            ;
+                        }];
+    } else {
+        NSInteger newX = -CGRectGetWidth(self.presentedView.frame);
+        [self animateCenterPanelXPosition:newX
+                        completionHandler:^(BOOL param) {
+                            [self.presentingViewController dismissViewControllerAnimated:YES
+                                                                              completion:NULL];
+                        }];
+    }
+}
+
+
+- (void)animateCenterPanelXPosition:(NSInteger)targetXPosition
+                  completionHandler:(void (^)(BOOL))completion {
+    CGFloat endAlpha = 0.0;
+    CGFloat springValue = 0.0;
+    if (targetXPosition == 0) {
+        springValue = 0.8;
+        endAlpha = kDimmingViewAlphaMax;
+    }
+    [UIView animateWithDuration:0.2
+                          delay:0
+         usingSpringWithDamping:springValue
+          initialSpringVelocity:0
+                        options:UIViewAnimationOptionCurveEaseInOut
+                     animations:^{
+                         CGRect newFrame = self.presentedView.frame;
+                         newFrame.origin.x = targetXPosition;
+                         self.presentedView.frame = newFrame;
+                         self.dimmingView.alpha = endAlpha;
+                     } completion:completion];
 }
 
 @end
