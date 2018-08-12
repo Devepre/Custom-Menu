@@ -10,9 +10,9 @@
 
 //! The corner radius applied to the view containing the presented view
 //! controller.
-static const CGFloat kPresentedViewCornerRadius = 0.f;
-static const CGFloat kPresentedViewWidthMultiplier = 3.0 / 4.0;
-static const CGFloat kTransitionDuration = 0.35;
+//static const CGFloat kPresentedViewCornerRadius = 16.f;
+static const CGFloat kPresentedViewWidthMultiplier = 3.0f / 4.0f;
+static const CGFloat kTransitionDuration = 0.35f;
 static const CGFloat kDimmingViewAlphaMax = 0.5f;
 static const CGFloat kDimmingViewAlphaMin = 0.0f;
 
@@ -39,7 +39,7 @@ static const CGFloat kDimmingViewAlphaMin = 0.0f;
 }
 
 
-- (UIView*)presentedView {
+- (UIView *)presentedView {
     // Return the wrapping view created in -presentationTransitionWillBegin.
     return self.presentationWrappingView;
 }
@@ -53,60 +53,20 @@ static const CGFloat kDimmingViewAlphaMin = 0.0f;
 - (void)presentationTransitionWillBegin {
     // The default implementation of -presentedView returns
     // self.presentedViewController.view.
-    UIView *presentedViewControllerView = [super presentedView];
+    UIView *presentedViewControllerViewActual = [super presentedView];
     
     // Wrap the presented view controller's view in an intermediate hierarchy
-    // that applies a shadow and rounded corners to the top-left and top-right
-    // edges.  The final effect is built using three intermediate views.
+    // that applies a shadow/ The final effect is built using three intermediate views.
     //
-    // presentationWrapperView              <- shadow
-    //   |- presentationRoundedCornerView   <- rounded corners (masksToBounds)
-    //        |- presentedViewControllerWrapperView
-    //             |- presentedViewControllerView (presentedViewController.view)
+    //  |- UITransitionView
+    //      |- dimmingView                          <- dimm
+    //      |- presentationWrapperViewWithShadow    <- shadow
+    //           |- presentedViewControllerViewActual      <- view itself (presentedViewController.view)
     //
-    // SEE ALSO: The note in SKVCustomPresentationSecondViewController.m.
-    {
-        UIView *presentationWrapperView = [[UIView alloc] initWithFrame:self.frameOfPresentedViewInContainerView];
-        presentationWrapperView.layer.shadowOpacity = 0.44f;
-        presentationWrapperView.layer.shadowRadius = 13.f;
-        presentationWrapperView.layer.shadowOffset = CGSizeMake(0, -6.f);
-        self.presentationWrappingView = presentationWrapperView;
-        
-        // presentationRoundedCornerView is CORNER_RADIUS points taller than the
-        // height of the presented view controller's view.  This is because
-        // the cornerRadius is applied to all corners of the view.  Since the
-        // effect calls for only the top two corners to be rounded we size
-        // the view such that the bottom CORNER_RADIUS points lie below
-        // the bottom edge of the screen.
-        UIView *presentationRoundedCornerView = [[UIView alloc] initWithFrame:UIEdgeInsetsInsetRect(presentationWrapperView.bounds,
-                                                                                                    UIEdgeInsetsMake(0, -kPresentedViewCornerRadius, 0, 0))];
-        presentationRoundedCornerView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-        presentationRoundedCornerView.layer.cornerRadius = kPresentedViewCornerRadius;
-        presentationRoundedCornerView.layer.masksToBounds = YES;
-        
-        // To undo the extra height added to presentationRoundedCornerView,
-        // presentedViewControllerWrapperView is inset by CORNER_RADIUS points.
-        // This also matches the size of presentedViewControllerWrapperView's
-        // bounds to the size of -frameOfPresentedViewInContainerView.
-        UIView *presentedViewControllerWrapperView = [[UIView alloc] initWithFrame:UIEdgeInsetsInsetRect(presentationRoundedCornerView.bounds,
-                                                                                                         UIEdgeInsetsMake(0, kPresentedViewCornerRadius, 0, 0))];
-        presentedViewControllerWrapperView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-        
-        // Add presentedViewControllerView -> presentedViewControllerWrapperView.
-        presentedViewControllerView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-        presentedViewControllerView.frame = presentedViewControllerWrapperView.bounds;
-        [presentedViewControllerWrapperView addSubview:presentedViewControllerView];
-        
-        // Add presentedViewControllerWrapperView -> presentationRoundedCornerView.
-        [presentationRoundedCornerView addSubview:presentedViewControllerWrapperView];
-        
-        // Add presentationRoundedCornerView -> presentationWrapperView.
-        [presentationWrapperView addSubview:presentationRoundedCornerView];
-    }
     
-    // Add a dimming view behind presentationWrapperView.  self.presentedView
-    // is added later (by the animator) so any views added here will be
-    // appear behind the -presentedView.
+    // Add a dimming view behind presentedViewControllerViewActual
+    // Actual view is added later (by the animator) so any views
+    // added here will be appear behind the -presentedView.
     {
         UIView *dimmingView = [[UIView alloc] initWithFrame:self.containerView.bounds];
         dimmingView.backgroundColor = [UIColor blackColor];
@@ -123,7 +83,23 @@ static const CGFloat kDimmingViewAlphaMin = 0.0f;
         self.dimmingView.alpha = kDimmingViewAlphaMin;
         [transitionCoordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context) {
             self.dimmingView.alpha = kDimmingViewAlphaMax;
-        } completion:NULL];
+        } completion:nil];
+    }
+    
+    // Adding shadow to the actually presented view
+    {
+        UIView *presentationWrapperViewWithShadow = [[UIView alloc] initWithFrame:self.frameOfPresentedViewInContainerView];
+        presentationWrapperViewWithShadow.layer.shadowOpacity = 0.44f;
+        presentationWrapperViewWithShadow.layer.shadowRadius = 13.f;
+        presentationWrapperViewWithShadow.layer.shadowOffset = CGSizeMake(0, -6.f);
+        
+        // Add presentedViewControllerViewActual -> presentedViewControllerWrapperView
+        presentedViewControllerViewActual.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+        presentedViewControllerViewActual.frame = self.frameOfPresentedViewInContainerView;
+        [presentationWrapperViewWithShadow addSubview:presentedViewControllerViewActual];
+        
+        // Setting resulted view to the property to retrun in -presentedView
+        self.presentationWrappingView = presentationWrapperViewWithShadow;
     }
 }
 
@@ -204,7 +180,6 @@ static const CGFloat kDimmingViewAlphaMin = 0.0f;
 - (CGSize)sizeForChildContentContainer:(id<UIContentContainer>)container
                withParentContainerSize:(CGSize)parentSize {
     if (container == self.presentedViewController) {
-//        return ((UIViewController*)container).preferredContentSize;
         CGSize preferedSize = CGSizeMake(parentSize.width * kPresentedViewWidthMultiplier,
                                          parentSize.height);
         return preferedSize;
@@ -223,7 +198,6 @@ static const CGFloat kDimmingViewAlphaMin = 0.0f;
     // The presented view extends presentedViewContentSize.height points from
     // the bottom edge of the screen.
     CGRect presentedViewControllerFrame = containerViewBounds;
-//    presentedViewControllerFrame.size.height = presentedViewContentSize.height;
     presentedViewControllerFrame.size = presentedViewContentSize;
     presentedViewControllerFrame.origin.y = CGRectGetMaxY(containerViewBounds) - presentedViewContentSize.height;
     return presentedViewControllerFrame;
@@ -421,7 +395,7 @@ static const CGFloat kDimmingViewAlphaMin = 0.0f;
             translation += [recognizer translationInView:self.presentedView].x;
             CGFloat translationInPercents = translation / CGRectGetWidth(self.presentedView.bounds);
             NSLog(@"Trans p: %f", translationInPercents);
-            if (translationInPercents  > 0) {
+            if (translationInPercents > 0) {
                 return;
             }
             
